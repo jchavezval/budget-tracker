@@ -1,6 +1,4 @@
-const { response } = require("express");
-
-const APP_PREFIX = 'BudgetTracker-';
+const APP_PREFIX = 'Budget-Tracker-';
 const VERSION = 'version_01';
 const CACHE_NAME = APP_PREFIX + VERSION;
 const FILES_TO_CACHE = [
@@ -15,10 +13,11 @@ const FILES_TO_CACHE = [
     "./icon-/icon-384x384.png",
     "./icon-/icon-512x512.png",
     "./js/idb.js",
+    "./manifest.json",
     "./js/index.js"
 ];
-self.addEventListener('install', function(evt) {
-    evt.waitUntil(
+self.addEventListener('install', function(e) {
+    e.waitUntil(
         caches.open(CACHE_NAME).then(cache => {
             console.log('Your files were pre-cached succesfully!');
             return cache.addAll(FILES_TO_CACHE);
@@ -27,10 +26,7 @@ self.addEventListener('install', function(evt) {
     self.skipWaiting();
 })
 
-// Activate the service worker and remove old data from the cache
-// YOUR CODE HERE
-//
-// Respond with cached resources
+// Activating the service worker. Respond with cached resources
 self.addEventListener('fetch', function (e) {
     console.log('fetch request : ' + e.request.url)
     if (e.request.url.includes('/api')) {
@@ -69,7 +65,7 @@ self.addEventListener('fetch', function (e) {
   // Cache resources
   self.addEventListener('install', function (e) {
     e.waitUntil(
-      caches.open(CACHE_NAME).then(function (cache) {
+      caches.open(CACHE_NAME).then(function(cache) {
         console.log('installing cache : ' + CACHE_NAME)
         return cache.addAll(FILES_TO_CACHE)
       })
@@ -80,12 +76,12 @@ self.addEventListener('fetch', function (e) {
   self.addEventListener('activate', function(e) {
     e.waitUntil(
       caches.keys().then(function(keyList) {
-        // `keyList` contains all cache names under your username.github.io
-        // filter out ones that has this app prefix to create keeplist
+        
+        // creating keeplist
         let cacheKeeplist = keyList.filter(function(key) {
           return key.indexOf(APP_PREFIX);
         });
-        // add current cache name to keeplist
+        // adding cache name to keeplist
         cacheKeeplist.push(CACHE_NAME);
   
         return Promise.all(
